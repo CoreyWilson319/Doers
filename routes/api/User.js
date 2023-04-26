@@ -4,16 +4,22 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const config = require("../../config/default.json");
 const User = require("../../models/User");
+const Calendar = require("../../models/Calendar");
+const Budget = require("../../models/Budget");
+const Transaction = require("../../models/Transaction");
+const Journal = require("../../models/Journal");
 const auth = require("../../middleware/auth");
 
 // HOW TO ADD PROTECTION TO ROUTES BELOW!!!
 // router.post('/post', auth, async (req, res) => { ... }
 
+// Logout and destroy token
+
 router.get("/test", (req, res) => {
 	res.send("Hello from /user/test");
 });
 
-router.post("register", async (req, res) => {
+router.post("/register", async (req, res) => {
 	const { email, password } = req.body;
 
 	try {
@@ -52,7 +58,7 @@ router.post("register", async (req, res) => {
 	}
 });
 
-router.post("/user/login", async (req, res) => {
+router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 
 	try {
@@ -90,7 +96,7 @@ router.post("/user/login", async (req, res) => {
 	}
 });
 
-router.get("/user/info", auth, async (req, res) => {
+router.get("/info", auth, async (req, res) => {
 	try {
 		const user = await UserModel.findById(req.user.id).select("-password");
 		res.status(200).json({ user });
