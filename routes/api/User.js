@@ -1,24 +1,24 @@
+// Dependencies
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const config = require("../../config/default.json");
+const auth = require("../../middleware/auth");
+
+// Models
 const User = require("../../models/User");
 const Calendar = require("../../models/Calendar");
 const Budget = require("../../models/Budget");
 const Transaction = require("../../models/Transaction");
 const Journal = require("../../models/Journal");
-const auth = require("../../middleware/auth");
 
-// HOW TO ADD PROTECTION TO ROUTES BELOW!!!
-// router.post('/post', auth, async (req, res) => { ... }
-
-// Logout and destroy token
-
+// Tests
 router.get("/test", (req, res) => {
 	res.send("Hello from /user/test");
 });
 
+// Register User
 router.post("/register", async (req, res) => {
 	const { email, password } = req.body;
 
@@ -58,6 +58,7 @@ router.post("/register", async (req, res) => {
 	}
 });
 
+// Login User
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 
@@ -96,6 +97,7 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+// Fetch User Info -Password
 router.get("/info", auth, async (req, res) => {
 	try {
 		const user = await UserModel.findById(req.user.id).select("-password");
@@ -104,5 +106,7 @@ router.get("/info", auth, async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+
+// Logout and destroy token
 
 module.exports = router;

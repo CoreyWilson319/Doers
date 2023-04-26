@@ -1,8 +1,12 @@
+// Dependencies
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+
+// Models
 const Calendar = require("../../models/Calendar");
 
+// Test
 router.get("/test", (req, res) => {
 	res.send("Hello from /Calendar/test");
 });

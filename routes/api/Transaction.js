@@ -1,9 +1,13 @@
+// Dependencies
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 
+// Models
+
 const Transaction = require("../../models/Transaction");
 
+// Test
 router.get("/test", (req, res) => {
 	res.send("Hello from /Transaction/test");
 });

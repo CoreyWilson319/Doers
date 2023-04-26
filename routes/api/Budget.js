@@ -1,9 +1,12 @@
+// Dependencies
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 
+// Models
 const Budget = require("../../models/Budget");
 
+// Test
 router.get("/test", (req, res) => {
 	res.send("Hello from /Budget/test");
 });
