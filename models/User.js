@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-	username: String,
-	password: String,
+	username: {
+		type: String,
+		minLength: 6,
+		maxLength: 20,
+	},
+	password: {
+		type: String,
+		minLength: 6,
+		maxLength: 20,
+	},
 	email: String,
 	task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
 	budget: { type: mongoose.Schema.Types.ObjectId, ref: "Budget" },
