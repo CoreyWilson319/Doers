@@ -20,6 +20,7 @@ router.get("/test", (req, res) => {
 
 // Register User
 router.post("/register", async (req, res) => {
+	console.log(req);
 	const { email, password } = req.body;
 
 	try {
@@ -71,6 +72,10 @@ router.post("/login", async (req, res) => {
 
 		// check is the encrypted password matches
 		const isMatch = await bcrypt.compare(password, user.password);
+		console.log(isMatch);
+		console.log(password);
+		console.log(user.password);
+
 		if (!isMatch) {
 			return res.status(400).json({ msg: "Email or password incorrect" });
 		}
@@ -84,7 +89,7 @@ router.post("/login", async (req, res) => {
 
 		jwt.sign(
 			payload,
-			process.env.JWT_SECRET,
+			config.jwt_secret,
 			{ expiresIn: "30 days" },
 			(err, token) => {
 				if (err) throw err;
@@ -93,6 +98,7 @@ router.post("/login", async (req, res) => {
 		);
 	} catch (err) {
 		console.error(err.message);
+		// console.log(req.body);
 		res.status(500).send("Server error");
 	}
 });
@@ -100,10 +106,12 @@ router.post("/login", async (req, res) => {
 // Fetch User Info -Password
 router.get("/info", auth, async (req, res) => {
 	try {
-		const user = await UserModel.findById(req.user.id).select("-password");
+		console.log(req.user);
+		const user = await User.findById(req.user.id).select("-password");
+		console.log(user);
 		res.status(200).json({ user });
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error });
 	}
 });
 

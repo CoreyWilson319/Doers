@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const journalSchema = new Schema({
+const taskSchema = new Schema({
 	title: String,
 	created: { type: Date, default: Date.now },
-	body: {
+	context: {
 		type: String,
 		minLength: 20,
-		maxLength: 1000,
+		maxLength: 500,
 	},
 	private: Boolean,
 });
 
-module.exports = Journal = mongoose.model("Journal", journalSchema);
+module.exports = Task = mongoose.model("Task", taskSchema);
