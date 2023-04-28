@@ -10,6 +10,7 @@ const journalSchema = new Schema({
 		maxLength: 1000,
 	},
 	private: Boolean,
+	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = Journal = mongoose.model("Journal", journalSchema);

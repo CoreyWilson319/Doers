@@ -10,8 +10,10 @@ const transactionSchema = new Schema({
 		min: 1,
 		max: 4,
 	},
-	amountPaid: null,
+	amountPaid: String,
 	paidForTheMonth: Boolean,
+	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+	budget: { type: mongoose.Schema.Types.ObjectId, ref: "Budget" },
 });
 
 module.exports = Transaction = mongoose.model("Transaction", transactionSchema);

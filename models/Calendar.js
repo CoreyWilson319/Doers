@@ -17,7 +17,11 @@ const calendarSchema = new Schema({
 		min: 1,
 		max: 12,
 	},
+	event: {
+		type: String,
+	},
 	created: { type: Date, default: Date.now },
+	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = Calendar = mongoose.model("Calendar", calendarSchema);
