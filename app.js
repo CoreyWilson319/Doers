@@ -29,11 +29,11 @@ app.use("/calendar", calendar);
 
 const port = process.env.PORT || 8082;
 
-app.listen(port, () => {
+app.listen(port, async () => {
 	console.log(`Server running on port ${port}`);
 });
 
 // Users will have many but the many will only have one user
 // Budget obj, Tasks (Now will change to Habit) Obj, Calendar Obj, Journal Obj
 
-// What do you mean by that unamerican
+module.exports = app;

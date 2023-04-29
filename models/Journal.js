@@ -9,7 +9,7 @@ const journalSchema = new Schema({
 		minLength: 20,
 		maxLength: 1000,
 	},
-	private: Boolean,
+	hidden: Boolean,
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

@@ -15,9 +15,9 @@ router.get("/test", (req, res) => {
 // Create user Journal
 router.post("/", auth, async (req, res) => {
 	try {
-		let { title, body, private } = req.body;
+		let { title, body, hidden } = req.body;
 		let user = await User.findById(req.user.id);
-		let entry = new Journal({ title, body, private, user: req.user.id });
+		let entry = new Journal({ title, body, hidden, user: req.user.id });
 		entry.save();
 		user.journal.push(entry);
 		user.save();
@@ -43,13 +43,13 @@ router.delete("/:id", auth, async (req, res) => {
 // Edit user Journal
 router.put("/:id", auth, async (req, res) => {
 	try {
-		let { body, title, private } = req.body;
+		let { body, title, hidden } = req.body;
 		await Journal.findOneAndUpdate(
 			{
 				_id: req.params.id,
 				user: req.user.id,
 			},
-			{ body, title, private }
+			{ body, title, hidden }
 		);
 		let updatedItem = await Journal.findById(req.params.id);
 		res

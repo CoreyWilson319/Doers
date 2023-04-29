@@ -36,9 +36,9 @@ router.get("/:id", auth, async (req, res) => {
 // Create user Task
 router.post("/", auth, async (req, res) => {
 	try {
-		let { title, context, private } = req.body;
+		let { title, context, hidden } = req.body;
 		let user = await User.findById(req.user.id);
-		let entry = new Task({ title, context, private, user: req.user.id });
+		let entry = new Task({ title, context, hidden, user: req.user.id });
 		entry.save();
 		user.task.push(entry);
 		user.save();
@@ -62,13 +62,13 @@ router.delete("/:id", auth, async (req, res) => {
 // Edit user Task
 router.put("/:id", auth, async (req, res) => {
 	try {
-		let { context, title, private } = req.body;
+		let { context, title, hidden } = req.body;
 		await Task.findOneAndUpdate(
 			{
 				_id: req.params.id,
 				user: req.user.id,
 			},
-			{ context, title, private }
+			{ context, title, hidden }
 		);
 		let updatedItem = await Task.findById(req.params.id);
 		res.status(200).json({ msg: "Successfully Edited Task Item", updatedItem });

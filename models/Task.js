@@ -9,7 +9,7 @@ const taskSchema = new Schema({
 		minLength: 20,
 		maxLength: 500,
 	},
-	private: Boolean,
+	hidden: Boolean,
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
