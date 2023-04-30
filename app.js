@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 // Connect Database
 connectDB();
 
-app.get("/", (req, res) => res.send("Hello World"));
+app.get("/", (req, res) => res.status(200).send("Hello World"));
 
 // Routes
 const users = require("./routes/api/User");
