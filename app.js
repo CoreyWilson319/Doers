@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/db");
+const disconnectDB = require("./config/db");
 
 const bodyParser = require("body-parser");
 const app = express();
@@ -8,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect Database
+// Connect Database comment back in later
 connectDB();
 
 app.get("/", (req, res) => res.status(200).send("Hello World"));

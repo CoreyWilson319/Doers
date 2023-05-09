@@ -20,7 +20,7 @@ router.get("/test", (req, res) => {
 
 // Register User
 router.post("/register", async (req, res) => {
-	console.log(req);
+	// console.log(req);
 	const { email, password } = req.body;
 
 	try {
@@ -72,9 +72,9 @@ router.post("/login", async (req, res) => {
 
 		// check is the encrypted password matches
 		const isMatch = await bcrypt.compare(password, user.password);
-		console.log(isMatch);
-		console.log(password);
-		console.log(user.password);
+		// console.log(isMatch);
+		// console.log(password);
+		// console.log(user.password);
 
 		if (!isMatch) {
 			return res.status(400).json({ msg: "Email or password incorrect" });
@@ -110,6 +110,14 @@ router.get("/info", auth, async (req, res) => {
 		const user = await User.findById(req.user.id).select("-password");
 		console.log(user);
 		res.status(200).json({ user });
+	} catch (error) {
+		res.status(500).json({ error });
+	}
+});
+
+router.get("/logout", auth, async (req, res) => {
+	try {
+		res.status(200).json({ msg: "Logged Out" });
 	} catch (error) {
 		res.status(500).json({ error });
 	}

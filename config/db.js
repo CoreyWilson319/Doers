@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("config");
-const db = config.get("mongoURI");
+const db = config.get("mongoURITest");
 
 const connectDB = async () => {
 	try {
@@ -15,5 +15,18 @@ const connectDB = async () => {
 		process.exit();
 	}
 };
+
+// exports.connectDB = connectDB;
+
+// const disconnectDB = async () => {
+// 	try {
+// 		await mongoose.connection.close();
+// 	} catch (err) {
+// 		console.log(err);
+// 		process.exit(1);
+// 	}
+// };
+
+// exports.disconnectDB = disconnectDB;
 
 module.exports = connectDB;
