@@ -52,6 +52,9 @@ router.post("/:budgetID/new", auth, async (req, res) => {
 			user,
 			budget,
 		});
+		if (!budget) {
+			res.status(404).json({ msg: "User budget not found" });
+		}
 		budget.transaction.push(transaction);
 		transaction.save();
 		budget.save();

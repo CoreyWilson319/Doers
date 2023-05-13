@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const mongoose = require("mongoose");
 
 // Models
 const Budget = require("../../models/Budget");
@@ -27,7 +28,7 @@ router.post("/create", auth, async (req, res) => {
 		if (existingBudgets.length > 0) {
 			for (let i = 0; i < existingBudgets.length; i++) {
 				if (existingBudgets[i].account === account) {
-					return res.status(200).json({ msg: "Account Already Exists!" });
+					return res.status(500).json({ msg: "Account Already Exists!" });
 				}
 			}
 		}
@@ -57,15 +58,20 @@ router.delete("/delete/all", auth, async (req, res) => {
 // Edit user budget
 router.put("/edit/:id", auth, async (req, res) => {
 	try {
-		await Budget.findByIdAndUpdate(req.params.id, {
-			account: req.body.account,
-			balance: req.body.balance,
-		});
-		let results = await User.findById(req.user.id).populate("budget");
-
-		res.status(200).json(results);
+		let checkItemID = await Budget.findOneAndUpdate(
+			{
+				_id: req.params.id,
+				user: req.user.id,
+			},
+			{
+				account: req.body.account,
+				balance: req.body.balance,
+			},
+			{ new: true }
+		);
+		res.status(200).json(checkItemID);
 	} catch (err) {
-		res.status(400).json({ err });
+		res.status(406).json({ err });
 	}
 });
 
@@ -76,6 +82,28 @@ router.delete("/delete/:id", auth, async (req, res) => {
 		let results = await User.findById(req.user.id).populate("budget");
 
 		res.status(200).json(results);
+	} catch (err) {
+		res.status(400).json({ err });
+	}
+});
+
+// Get all user budget
+router.get("/all", auth, async (req, res) => {
+	try {
+		let foundBudgets = await Budget.find({ user: req.user.id });
+		res.status(200).json(foundBudgets);
+	} catch (err) {
+		res.status(400).json({ err });
+	}
+});
+
+// Get user budget
+router.get("/:id", auth, async (req, res) => {
+	try {
+		let budget = await Budget.findById(req.params.id);
+		let results = await User.findById(req.user.id).populate("budget");
+
+		res.status(200).json(budget);
 	} catch (err) {
 		res.status(400).json({ err });
 	}
