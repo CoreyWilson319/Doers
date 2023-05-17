@@ -34,7 +34,7 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 // Create user Task
-router.post("/", auth, async (req, res) => {
+router.post("/new", auth, async (req, res) => {
 	try {
 		let { title, context, hidden } = req.body;
 		let user = await User.findById(req.user.id);
@@ -63,15 +63,17 @@ router.delete("/:id", auth, async (req, res) => {
 router.put("/:id", auth, async (req, res) => {
 	try {
 		let { context, title, hidden } = req.body;
-		await Task.findOneAndUpdate(
+		let updatedItem = await Task.findOneAndUpdate(
 			{
 				_id: req.params.id,
 				user: req.user.id,
 			},
-			{ context, title, hidden }
+			{ context, title, hidden },
+			{ new: true }
 		);
-		let updatedItem = await Task.findById(req.params.id);
-		res.status(200).json({ msg: "Successfully Edited Task Item", updatedItem });
+
+		if (!updatedItem) return res.status(403).json({ msg: "Unathorized" });
+		res.status(200).json(updatedItem);
 	} catch (err) {
 		res.status(500).json(err);
 	}

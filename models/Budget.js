@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const budgetSchema = new Schema({
 	account: String,
 	balance: Number,
-	transaction: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
+	transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Transaction" }],
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

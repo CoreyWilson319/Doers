@@ -14,7 +14,7 @@ router.get("/test", (req, res) => {
 	res.send("Hello from /Transaction/test");
 });
 
-// Get user transactions
+// Get all user transactions
 router.get("/", auth, async (req, res) => {
 	try {
 		let transactions = await Transaction.find({ user: req.user.id });
@@ -40,7 +40,6 @@ router.post("/:budgetID/new", auth, async (req, res) => {
 	try {
 		let { category, label, value, frequency, amountPaid, paidForTheMonth } =
 			req.body;
-		let user = await User.findById(req.user.id);
 		let budget = await Budget.findById(req.params.budgetID);
 		let transaction = new Transaction({
 			category,
@@ -49,16 +48,16 @@ router.post("/:budgetID/new", auth, async (req, res) => {
 			frequency,
 			amountPaid,
 			paidForTheMonth,
-			user,
-			budget,
+			user: req.user.id,
+			budget: req.params.budgetID,
 		});
 		if (!budget) {
-			res.status(404).json({ msg: "User budget not found" });
+			return res.status(404).json({ msg: "User budget not found" });
 		}
-		budget.transaction.push(transaction);
+		budget.transactions.push(transaction);
 		transaction.save();
 		budget.save();
-		res.status(200).json(user);
+		res.status(200).json(budget);
 	} catch (err) {
 		res.status(500).json(err);
 	}
@@ -74,8 +73,10 @@ router.put("/edit/:id", auth, async (req, res) => {
 				user: req.user.id,
 				_id: req.params.id,
 			},
-			{ category, label, value, frequency, amountPaid, paidForTheMonth }
+			{ category, label, value, frequency, amountPaid, paidForTheMonth },
+			{ new: true }
 		);
+		if (!updatedItem) return res.status(400).json({ msg: "Incorrect User" });
 		res.status(200).json(updatedItem);
 	} catch (err) {
 		res.status(500).json(err);
@@ -90,6 +91,7 @@ router.delete("/delete/:id", auth, async (req, res) => {
 			_id: req.params.id,
 		});
 
+		if (!deletedItem) return res.status(400).json({ msg: "Not Found" });
 		res.status(200).json(deletedItem);
 	} catch (err) {
 		res.status(500).json(err);

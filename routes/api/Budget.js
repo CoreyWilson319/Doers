@@ -60,8 +60,8 @@ router.put("/edit/:id", auth, async (req, res) => {
 	try {
 		let checkItemID = await Budget.findOneAndUpdate(
 			{
-				_id: req.params.id,
 				user: req.user.id,
+				_id: req.params.id,
 			},
 			{
 				account: req.body.account,
@@ -69,19 +69,24 @@ router.put("/edit/:id", auth, async (req, res) => {
 			},
 			{ new: true }
 		);
+		if (!checkItemID) return res.status(500).json({ msg: "Incorrect User" });
 		res.status(200).json(checkItemID);
 	} catch (err) {
-		res.status(406).json({ err });
+		res.status(500).json({ err });
 	}
 });
 
 // Delete user budget
 router.delete("/delete/:id", auth, async (req, res) => {
 	try {
-		await Budget.findByIdAndDelete(req.params.id);
+		let deletedBudget = await Budget.findOneAndDelete({
+			_id: req.params.id,
+			user: req.user.id,
+		});
 		let results = await User.findById(req.user.id).populate("budget");
 
-		res.status(200).json(results);
+		if (!deletedBudget) return res.status(500).json({ msg: "Incorrect User" });
+		res.status(200).json(results.budget);
 	} catch (err) {
 		res.status(400).json({ err });
 	}
