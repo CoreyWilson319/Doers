@@ -13,7 +13,7 @@ router.get("/test", (req, res) => {
 });
 
 // Create user calendaritem
-router.post("/create", auth, async (req, res) => {
+router.post("/new", auth, async (req, res) => {
 	try {
 		let { year, day, month, event } = req.body;
 		let userID = req.user.id;
@@ -24,7 +24,7 @@ router.post("/create", auth, async (req, res) => {
 		user.save();
 		newEntry.save();
 
-		res.status(200).json(user);
+		res.status(200).json(newEntry);
 	} catch (err) {
 		res.status(500).json(err);
 	}
@@ -46,7 +46,7 @@ router.get("/:id", auth, async (req, res) => {
 			_id: req.params.id,
 			user: req.user.id,
 		});
-		return res.status(200).json({ calendarItem });
+		return res.status(200).json(calendarItem);
 	} catch (err) {
 		res.status(500).json(err);
 	}
@@ -59,9 +59,7 @@ router.delete("/:id", auth, async (req, res) => {
 			_id: req.params.id,
 			user: req.user.id,
 		});
-		res
-			.status(200)
-			.json({ msg: "Successfully Deleted Calendar Item", deletedItem });
+		res.status(200).json(deletedItem);
 	} catch (err) {
 		res.status(500).json(err);
 	}
@@ -71,7 +69,7 @@ router.delete("/:id", auth, async (req, res) => {
 router.put("/:id", auth, async (req, res) => {
 	try {
 		let { month, day, year, event } = req.body;
-		await Calendar.findOneAndUpdate(
+		let updatedItem = await Calendar.findOneAndUpdate(
 			{
 				_id: req.params.id,
 				user: req.user.id,
@@ -83,10 +81,7 @@ router.put("/:id", auth, async (req, res) => {
 				event,
 			}
 		);
-		let updatedItem = await Calendar.findById(req.params.id);
-		res
-			.status(200)
-			.json({ msg: "Successfully Edited Calendar Item", updatedItem });
+		res.status(200).json(updatedItem);
 	} catch (err) {
 		res.status(500).json(err);
 	}

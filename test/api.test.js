@@ -19,7 +19,6 @@ async function login(cred) {
 	token = await token.body.token;
 	return token;
 }
-// let editID;
 
 beforeAll(async () => {
 	try {
@@ -206,7 +205,6 @@ describe("Budget CRUD", () => {
 		});
 		expect(secondaryUser.statusCode).toBe(200);
 
-		// console.log(primaryUser, "BODY");
 		let allBudgets = await request(app)
 			.get("/budget/all")
 			.set("x-auth-token", primaryUser);
@@ -381,7 +379,6 @@ describe("Transaction CRUD", () => {
 			.set("x-auth-token", token);
 		let transactionID2 = await idGetRequest.body[1]._id;
 		let transactionID = await idGetRequest.body[2]._id;
-		console.log(transactionID);
 		let deleteRequest = await request(app)
 			.delete("/transactions/delete/" + transactionID)
 			.set("x-auth-token", token);
@@ -472,8 +469,6 @@ describe("Task CRUD", () => {
 				hidden: true,
 			});
 
-		console.log(putRequest.body, "BODY");
-
 		expect(putRequest.statusCode).toBe(200);
 		expect(putRequest.body.context).toMatch(
 			"Changed to something more fitting"
@@ -495,30 +490,209 @@ describe("Task CRUD", () => {
 		expect(getRequest.body.length).toBe(2);
 	});
 });
-// describe("Journal CRUD", () => {
-// 	test("Test", async () => {
-// 		let getTest = await request(app).get("/journal/test");
-// 		expect(getTest.statusCode).toBe(200);
-// 		expect(getTest.text).toMatch("Hello from /Journal/test");
-// 	});
-// 	test("Create", async () => {});
-// 	test("Read", async () => {});
-// 	test("ReadByID", async () => {});
-// 	test("Edit", async () => {});
-// 	test("Delete", async () => {});
-// });
-// describe("Calendar CRUD", () => {
-// 	test("Test", async () => {
-// 		let getTest = await request(app).get("/calendar/test");
-// 		expect(getTest.statusCode).toBe(200);
-// 		expect(getTest.text).toMatch("Hello from /Calendar/test");
-// 	});
-// 	test("Create", async () => {});
-// 	test("Read", async () => {});
-// 	test("ReadByID", async () => {});
-// 	test("Edit", async () => {});
-// 	test("Delete", async () => {});
-// });
+describe("Journal CRUD", () => {
+	test("Test", async () => {
+		let getTest = await request(app).get("/journal/test");
+		expect(getTest.statusCode).toBe(200);
+		expect(getTest.text).toMatch("Hello from /Journal/test");
+	});
+	test("Create", async () => {
+		let token = await login(correctLogin);
+		let postRequest = await request(app)
+			.post("/journal/new")
+			.set("x-auth-token", token)
+			.send({
+				title: "TODAYS DATE IS...",
+				body: "TODAY IS THE BEST DAY EVER PERIODT",
+				hidden: false,
+			});
+		let postRequest2 = await request(app)
+			.post("/journal/new")
+			.set("x-auth-token", token)
+			.send({
+				title: "TODAYS DATE IS TOMORROW",
+				body: "TODAY IS THE BEST DAY EVER PERIODT BOO",
+				hidden: false,
+			});
+		let postRequest3 = await request(app)
+			.post("/journal/new")
+			.set("x-auth-token", token)
+			.send({
+				title: "TODAYS DATE IS THE DAY AFTER",
+				body: "TODAY IS THE BEST DAY EVER PERIODT BOO",
+				hidden: false,
+			});
 
-// To Do List
-// Start and Finish Task, Journal and Calendar test (3)
+		expect(postRequest.statusCode).toBe(200);
+		expect(postRequest2.statusCode).toBe(200);
+		expect(postRequest3.statusCode).toBe(200);
+	});
+	test("Read", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/journal/")
+			.set("x-auth-token", token);
+
+		expect(getRequest.statusCode).toBe(200);
+		expect(getRequest.body.length).toBe(3);
+	});
+	test("ReadByID", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/journal/")
+			.set("x-auth-token", token);
+
+		let id = await getRequest.body[0];
+
+		let getByIDRequest = await request(app)
+			.get("/journal/" + id)
+			.set("x-auth-token", token);
+
+		expect(getByIDRequest.statusCode).toBe(200);
+		expect(getByIDRequest.body[0].title).toMatch("TODAYS DATE IS...");
+	});
+	test("Edit", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/journal/")
+			.set("x-auth-token", token);
+
+		let id = await getRequest.body[0];
+
+		let putRequest = await request(app)
+			.put("/journal/" + id)
+			.set("x-auth-token", token)
+			.send({ title: "CHANGED", body: "CHANGED", hidden: true });
+
+		expect(putRequest.statusCode).toBe(200);
+		expect(putRequest.body.title).toMatch("CHANGED");
+	});
+	test("Delete", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/journal/")
+			.set("x-auth-token", token);
+
+		let id = await getRequest.body[0];
+
+		let deleteRequest = await request(app)
+			.delete("/journal/" + id)
+			.set("x-auth-token", token);
+
+		let getRequest2 = await request(app)
+			.get("/journal/")
+			.set("x-auth-token", token);
+
+		expect(deleteRequest.statusCode).toBe(200);
+		expect(getRequest2.body.length).toBe(2);
+	});
+});
+describe("Calendar CRUD", () => {
+	test("Test", async () => {
+		let getTest = await request(app).get("/calendar/test");
+		expect(getTest.statusCode).toBe(200);
+		expect(getTest.text).toMatch("Hello from /Calendar/test");
+	});
+	test("Create", async () => {
+		let token = await login(correctLogin);
+
+		let postRequest = await request(app)
+			.post("/calendar/new")
+			.set("x-auth-token", token)
+			.send({
+				year: 2023,
+				day: 18,
+				month: 5,
+				event: "WORKING MAN",
+			});
+		let postRequest2 = await request(app)
+			.post("/calendar/new")
+			.set("x-auth-token", token)
+			.send({
+				year: 2023,
+				day: 19,
+				month: 5,
+				event: "WORKING MAN",
+			});
+		let postRequest3 = await request(app)
+			.post("/calendar/new")
+			.set("x-auth-token", token)
+			.send({
+				year: 2023,
+				day: 20,
+				month: 5,
+				event: "WORKING MAN",
+			});
+
+		expect(postRequest.statusCode).toBe(200);
+		expect(postRequest2.statusCode).toBe(200);
+		expect(postRequest3.statusCode).toBe(200);
+	});
+	test("Read", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/calendar/")
+			.set("x-auth-token", token);
+
+		expect(getRequest.statusCode).toBe(200);
+		expect(getRequest.body.length).toBe(3);
+	});
+	test("ReadByID", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/calendar/")
+			.set("x-auth-token", token);
+
+		let id = getRequest.body[0]._id;
+
+		let getIDRequest = await request(app)
+			.get("/calendar/" + id)
+			.set("x-auth-token", token);
+
+		expect(getIDRequest.statusCode).toBe(200);
+		expect(getIDRequest.body[0].day).toBe(18);
+	});
+	test("Edit", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/calendar/")
+			.set("x-auth-token", token);
+
+		let id = getRequest.body[0]._id;
+
+		let putRequest = await request(app)
+			.put("/calendar/" + id)
+			.set("x-auth-token", token)
+			.send({ month: 5, day: 21, year: 2023, event: "Not Work" });
+
+		expect(putRequest.statusCode).toBe(200);
+	});
+	test("Delete", async () => {
+		let token = await login(correctLogin);
+
+		let getRequest = await request(app)
+			.get("/calendar/")
+			.set("x-auth-token", token);
+
+		let id = getRequest.body[0]._id;
+
+		let deleteRequest = await request(app)
+			.delete("/calendar/" + id)
+			.set("x-auth-token", token);
+
+		let secondGetRequest = await request(app)
+			.get("/calendar/")
+			.set("x-auth-token", token);
+
+		expect(deleteRequest.statusCode).toBe(200);
+		expect(secondGetRequest.statusCode).toBe(200);
+		expect(secondGetRequest.body.length).toBe(2);
+	});
+});

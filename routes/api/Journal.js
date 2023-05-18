@@ -13,7 +13,7 @@ router.get("/test", (req, res) => {
 });
 
 // Create user Journal
-router.post("/", auth, async (req, res) => {
+router.post("/new", auth, async (req, res) => {
 	try {
 		let { title, body, hidden } = req.body;
 		let user = await User.findById(req.user.id);
@@ -27,11 +27,33 @@ router.post("/", auth, async (req, res) => {
 	}
 });
 
+router.get("/", auth, async (req, res) => {
+	try {
+		let journals = await Journal.find({ user: req.user.id });
+		res.status(200).json(journals);
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+router.get("/:id", auth, async (req, res) => {
+	try {
+		let journal = await Journal.find({
+			user: req.user.id,
+			id: req.params.id,
+		});
+
+		if (!journal) return res.status(403).json({ msg: "Unauthorized" });
+		res.status(200).json(journal);
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+
 // Delete user Journal
 router.delete("/:id", auth, async (req, res) => {
 	try {
 		let deletedItem = await Journal.findOneAndDelete({
-			_id: req.params.id,
+			id: req.params.id,
 			user: req.user.id,
 		});
 		res.status(200).json(deletedItem);
@@ -44,17 +66,16 @@ router.delete("/:id", auth, async (req, res) => {
 router.put("/:id", auth, async (req, res) => {
 	try {
 		let { body, title, hidden } = req.body;
-		await Journal.findOneAndUpdate(
+		let updatedItem = await Journal.findOneAndUpdate(
 			{
-				_id: req.params.id,
+				id: req.params.id,
 				user: req.user.id,
 			},
-			{ body, title, hidden }
+			{ body, title, hidden },
+			{ new: true }
 		);
-		let updatedItem = await Journal.findById(req.params.id);
-		res
-			.status(200)
-			.json({ msg: "Successfully Edited Journal Item", updatedItem });
+		if (!updatedItem) return res.status(403).json({ msg: "Unauthorized User" });
+		res.status(200).json(updatedItem);
 	} catch (err) {
 		res.status(500).json(err);
 	}
